@@ -73,7 +73,7 @@ export default class Ghost {
 		ghost.children[0].material.opacity = 0;
 		gsap.to(ghost.children[0].material, { opacity: 1 });
 
-		ghost.position.set(positionOfGhost.x, 0, positionOfGhost.z);
+		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
 		this.scene.add(ghost);
 		const movementObj = this.CheckDirectionToMoveGhost(positionOfGhost);
 
@@ -81,7 +81,7 @@ export default class Ghost {
 	}
 
 	playWhiteGhostMovementAnimation(ghost, movementObj) {
-		gsap.fromTo(ghost.position, { y: 3 }, { y: 0, duration: 1 }).then(() => {
+		gsap.fromTo(ghost.position, { y: 3 }, { y: 0.6, duration: 1 }).then(() => {
 			let ghostAnimations = [];
 			let totalAnimations = movementObj.directionArray.length; // To keep track of total animations completed
 
