@@ -36,8 +36,6 @@ export default class Player {
 	}
 
 	addPlayer() {
-		// this.playerLight = new THREE.PointLight(0xffff00, 5);
-		// this.playerLight.position.set(0, 0.2, 0);
 		this.halloweenBitsTexture = this.resources.items.halloweenBitsTexture;
 		this.playerColorTexture = this.resources.items.pumpkin002_basecolor;
 		this.playerRoughnessTexture = this.resources.items.pumpkin002_roughness;
@@ -59,7 +57,6 @@ export default class Player {
 				child.castShadow = true;
 			}
 		});
-		// this.player.add(this.playerLight);
 		this.player.position.set(0, 4, 0);
 		if (this.debug.active) {
 			this.debugFolder
@@ -80,30 +77,6 @@ export default class Player {
 				.max(6)
 				.step(0.1)
 				.name("Player Z Position");
-			// this.debugFolder
-			// 	.add(this.playerLight.position, "x")
-			// 	.min(-6)
-			// 	.max(8)
-			// 	.step(0.1)
-			// 	.name("Player Light X Position");
-			// this.debugFolder
-			// 	.add(this.playerLight.position, "y")
-			// 	.min(-2)
-			// 	.max(2)
-			// 	.step(0.1)
-			// 	.name("Player Light Y Position");
-			// this.debugFolder
-			// 	.add(this.playerLight.position, "z")
-			// 	.min(-8)
-			// 	.max(6)
-			// 	.step(0.1)
-			// 	.name("Player Light Z Position");
-			// this.debugFolder
-			// 	.add(this.playerLight, "intensity")
-			// 	.min(0)
-			// 	.max(10)
-			// 	.step(0.1)
-			// 	.name("Player Light Intensity");
 		}
 	}
 

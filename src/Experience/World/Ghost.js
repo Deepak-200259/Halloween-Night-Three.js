@@ -7,6 +7,7 @@ import {
 	POSITIVE_X_ARRAY,
 	POSITIVE_Z_ARRAY,
 } from "./Constants";
+import * as THREE from "three";
 export default class Ghost {
 	constructor(ghostType) {
 		this.experience = new Experience();
@@ -71,13 +72,27 @@ export default class Ghost {
 
 	setupGhost(ghost, positionOfGhost, directionToMoveArray) {
 		ghost.children[0].material.opacity = 0;
+		ghost.traverse((child) => {
+			child.castShadow = child instanceof THREE.Mesh ? true : null;
+		});
 		gsap.to(ghost.children[0].material, { opacity: 1 });
 
 		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
 		this.scene.add(ghost);
 		const movementObj = this.CheckDirectionToMoveGhost(positionOfGhost);
-
+		ghost.rotation.y = this.chooseRotationAngle(ghost.position, movementObj);
 		this.playWhiteGhostMovementAnimation(ghost, movementObj);
+	}
+
+	chooseRotationAngle(ghostPosition, movementObj) {
+		if (movementObj.z && ghostPosition.x === -6) return Math.PI / 2;
+		else if (movementObj.z && ghostPosition.x === 8) return -Math.PI / 2;
+		else if (movementObj.x && ghostPosition.z === -8) return 0;
+		else if (movementObj.x && ghostPosition.z === 6) return Math.PI;
+		else if (ghostPosition.x === -6) return Math.PI / 2;
+		else if (ghostPosition.x === 8) return -Math.PI / 2;
+		else if (ghostPosition.z === -8) return 0;
+		else if (ghostPosition.z === 6) return Math.PI;
 	}
 
 	playWhiteGhostMovementAnimation(ghost, movementObj) {
@@ -106,6 +121,11 @@ export default class Ghost {
 
 			const reverseAllAnimations = () => {
 				ghostAnimations.forEach((animation) => animation.reverse());
+				gsap.to(ghost.rotation, {
+					y: ghost.rotation.y + Math.PI,
+					duration: 0.1,
+					ease: "none",
+				});
 			};
 		});
 	}
@@ -140,21 +160,10 @@ export default class Ghost {
 			return obj;
 		}
 
-		if (x === -6) {
-			console.log("X = -6");
-			return { z: z, directionArray: positiveXArray };
-		} else if (x === 8) {
-			console.log("X = 8");
-			return { z: z, directionArray: negativeXArray };
-		}
-
-		if (z === -8) {
-			console.log("Z = -8");
-			return { x: x, directionArray: positiveZArray };
-		} else if (z === 6) {
-			console.log("Z = 6");
-			return { x: x, directionArray: negativeZArray };
-		}
+		if (x === -6) return { z: z, directionArray: positiveXArray };
+		else if (x === 8) return { z: z, directionArray: negativeXArray };
+		if (z === -8) return { x: x, directionArray: positiveZArray };
+		else if (z === 6) return { x: x, directionArray: negativeZArray };
 	}
 
 	removeGhostFromScene(ghost) {
