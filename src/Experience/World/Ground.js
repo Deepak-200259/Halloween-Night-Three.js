@@ -23,6 +23,7 @@ export default class Ground {
 		this.ground.scene.position.set(1, 0, -1);
 		this.ground.scene.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
+				child.material = new THREE.MeshPhongMaterial();
 				child.material.map = this.getTexture();
 				child.receiveShadow = true;
 			}

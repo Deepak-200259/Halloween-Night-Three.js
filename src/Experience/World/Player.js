@@ -15,7 +15,8 @@ export default class Player {
 		this.addPlayer();
 		this.startPlayerAnim();
 		this.registerEvents();
-		this.tweensOfMovement = [];
+		this.isAnimationPlaying = false;
+		this.occupiedPositions = this.experience.world.graves.gravesCoordinates;
 	}
 
 	startPlayerAnim() {
@@ -35,6 +36,18 @@ export default class Player {
 			.repeat(Infinity);
 	}
 
+	checkIfPositionIsAvailable(playerNextPosition) {
+		for (let i = 0; i < this.occupiedPositions.length; i++) {
+			if (
+				playerNextPosition.x === this.occupiedPositions[i].x &&
+				playerNextPosition.z === this.occupiedPositions[i].z
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	addPlayer() {
 		this.halloweenBitsTexture = this.resources.items.halloweenBitsTexture;
 		this.playerColorTexture = this.resources.items.pumpkin002_basecolor;
@@ -48,12 +61,11 @@ export default class Player {
 		this.scene.add(this.player);
 		this.player.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
-				child.material.envMap = this.halloweenBitsTexture;
+				child.material = new THREE.MeshPhongMaterial();
 				child.material.side = THREE.DoubleSide;
 				child.material.map = this.playerColorTexture;
+				child.material.map.flipY = false;
 				child.material.roughnessMap = this.playerRoughnessTexture;
-				child.material.metalness = 0;
-				child.material.roughness = 0;
 				child.castShadow = true;
 			}
 		});
@@ -83,59 +95,154 @@ export default class Player {
 	registerEvents() {
 		window.addEventListener("keydown", (event) => {
 			let characterRotation = 0;
-			switch (event.key) {
-				case KEYS.ARROW_RIGHT:
-					characterRotation = Math.PI / 2;
-					this.moveCharacter("Right", characterRotation);
-					break;
-				case KEYS.ARROW_LEFT:
-					characterRotation = -Math.PI / 2;
-					this.moveCharacter("Left", characterRotation);
-					break;
-				case KEYS.ARROW_UP:
-					characterRotation = Math.PI;
-					this.moveCharacter("Up", characterRotation);
-					break;
-				case KEYS.ARROW_DOWN:
-					characterRotation = 0;
-					this.moveCharacter("Down", characterRotation);
-					break;
+			if (!this.isAnimationPlaying) {
+				switch (event.key) {
+					case KEYS.ARROW_RIGHT:
+						characterRotation = Math.PI / 2;
+						this.moveCharacter("Right", characterRotation);
+						break;
+					case KEYS.ARROW_LEFT:
+						characterRotation = -Math.PI / 2;
+						this.moveCharacter("Left", characterRotation);
+						break;
+					case KEYS.ARROW_UP:
+						characterRotation = Math.PI;
+						this.moveCharacter("Up", characterRotation);
+						break;
+					case KEYS.ARROW_DOWN:
+						characterRotation = 0;
+						this.moveCharacter("Down", characterRotation);
+						break;
+				}
 			}
 		});
 	}
 
 	moveCharacter(movementDirection, rotation) {
+		this.isAnimationPlaying = true;
 		switch (movementDirection) {
 			case "Right": {
 				console.log("RIGHT WORKING", this.player.position.x);
-				gsap.to(this.player.position, {
-					x: this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
-					duration: 0.5,
-				});
+				if (
+					!this.checkIfPositionIsAvailable(
+						new THREE.Vector3(
+							this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
+							this.player.position.y,
+							this.player.position.z,
+						),
+					)
+				) {
+					gsap.to(this.player.position, {
+						x: this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
+						duration: 0.35,
+						onComplete: () => {
+							if (
+								(this.player.position.x === -2 ||
+									this.player.position.x === 0 ||
+									this.player.position.x === 2 ||
+									this.player.position.x === 4) &&
+								this.player.position.z === 6
+							) {
+								this.experience.world.gateArch.hideGateArch();
+							} else {
+								this.experience.world.gateArch.showGateArch();
+							}
+						},
+					});
+				}
 				break;
 			}
 			case "Left": {
 				console.log("LEFT WORKING", this.player.position.x);
-				gsap.to(this.player.position, {
-					x: this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
-					duration: 0.5,
-				});
+				if (
+					!this.checkIfPositionIsAvailable(
+						new THREE.Vector3(
+							this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
+							this.player.position.y,
+							this.player.position.z,
+						),
+					)
+				) {
+					gsap.to(this.player.position, {
+						x: this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
+						duration: 0.35,
+						onComplete: () => {
+							if (
+								(this.player.position.x === -2 ||
+									this.player.position.x === 0 ||
+									this.player.position.x === 2 ||
+									this.player.position.x === 4) &&
+								this.player.position.z === 6
+							) {
+								this.experience.world.gateArch.hideGateArch();
+							} else {
+								this.experience.world.gateArch.showGateArch();
+							}
+						},
+					});
+				}
 				break;
 			}
 			case "Up": {
 				console.log("UP WORKING", this.player.position.x);
-				gsap.to(this.player.position, {
-					z: this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
-					duration: 0.5,
-				});
+				if (
+					!this.checkIfPositionIsAvailable(
+						new THREE.Vector3(
+							this.player.position.x,
+							this.player.position.y,
+							this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
+						),
+					)
+				) {
+					gsap.to(this.player.position, {
+						z: this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
+						duration: 0.35,
+						onComplete: () => {
+							if (
+								(this.player.position.x === -2 ||
+									this.player.position.x === 0 ||
+									this.player.position.x === 2 ||
+									this.player.position.x === 4) &&
+								this.player.position.z === 6
+							) {
+								this.experience.world.gateArch.hideGateArch();
+							} else {
+								this.experience.world.gateArch.showGateArch();
+							}
+						},
+					});
+				}
 				break;
 			}
 			case "Down": {
 				console.log("DOWN WORKING", this.player.position.x);
-				gsap.to(this.player.position, {
-					z: this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
-					duration: 0.5,
-				});
+				if (
+					!this.checkIfPositionIsAvailable(
+						new THREE.Vector3(
+							this.player.position.x,
+							this.player.position.y,
+							this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
+						),
+					)
+				) {
+					gsap.to(this.player.position, {
+						z: this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
+						duration: 0.35,
+						onComplete: () => {
+							if (
+								(this.player.position.x === -2 ||
+									this.player.position.x === 0 ||
+									this.player.position.x === 2 ||
+									this.player.position.x === 4) &&
+								this.player.position.z === 6
+							) {
+								this.experience.world.gateArch.hideGateArch();
+							} else {
+								this.experience.world.gateArch.showGateArch();
+							}
+						},
+					});
+				}
 				break;
 			}
 		}
@@ -155,14 +262,17 @@ export default class Player {
 		const positioningTimeling = gsap.timeline();
 		positioningTimeling
 			.to(this.player.position, {
-				y: 3,
-				duration: 0.25,
+				y: 2,
+				duration: 0.2,
 				ease: "power2.out",
 			})
 			.to(this.player.position, {
 				y: 0.6,
-				duration: 0.25,
+				duration: 0.15,
 				ease: "power2.in",
+				onComplete: () => {
+					this.isAnimationPlaying = false;
+				},
 			});
 	}
 
@@ -170,16 +280,16 @@ export default class Player {
 		const scalingTimeline = gsap.timeline();
 		scalingTimeline
 			.to(this.player.scale, {
-				x: this.player.scale.x - 0.2,
-				y: this.player.scale.y + 0.2,
-				z: this.player.scale.z - 0.2,
-				duration: 0.25,
+				x: 0.8,
+				y: 1.2,
+				z: 0.8,
+				duration: 0.2,
 			})
 			.to(this.player.scale, {
-				x: this.player.scale.x + 0.2,
-				y: this.player.scale.y - 0.2,
-				z: this.player.scale.z + 0.2,
-				duration: 0.25,
+				x: 1,
+				y: 1,
+				z: 1,
+				duration: 0.15,
 			});
 	}
 }

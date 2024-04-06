@@ -15,18 +15,12 @@ export default class Ghost {
 		this.camera = this.experience.camera;
 
 		this.resources = this.experience.resources;
+		this.ghotsCurrentlyInScene = [];
 
-		const numberOfGhosts = 100;
-
-		for (let i = 1; i < numberOfGhosts + 1; i++) {
+		setInterval(() => {
 			const { selectedghost, ghostPos } = this.selectGhost(ghostType);
-			setTimeout(() => {
-				this.setupGhost(selectedghost, ghostPos, ghostPos.directionToMoveArray);
-			}, numberOfGhosts * i * 30);
-			// setTimeout(() => {
-			// 	this.removeGhostFromScene(selectedghost);
-			// }, numberOfGhosts * i * 1000 + 15000);
-		}
+			this.setupGhost(selectedghost, ghostPos, ghostPos.directionToMoveArray);
+		}, 2000);
 	}
 
 	selectGhost(ghostType) {
@@ -73,12 +67,18 @@ export default class Ghost {
 	setupGhost(ghost, positionOfGhost, directionToMoveArray) {
 		ghost.children[0].material.opacity = 0;
 		ghost.traverse((child) => {
-			child.castShadow = child instanceof THREE.Mesh ? true : null;
+			if (child instanceof THREE.Mesh) {
+				child.material = new THREE.MeshPhongMaterial();
+				child.material.map = this.experience.resources.items.ghostBaseColor;
+				child.material.map.flipY = false;
+				child.material.map.colorspace = THREE.SRGBColorSpace;
+				child.castShadow = true;
+			}
 		});
 		gsap.to(ghost.children[0].material, { opacity: 1 });
-
 		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
 		this.scene.add(ghost);
+		this.ghotsCurrentlyInScene.push(ghost);
 		const movementObj = this.CheckDirectionToMoveGhost(positionOfGhost);
 		ghost.rotation.y = this.chooseRotationAngle(ghost.position, movementObj);
 		this.playWhiteGhostMovementAnimation(ghost, movementObj);

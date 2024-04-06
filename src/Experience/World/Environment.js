@@ -20,11 +20,12 @@ export default class Environment {
 		this.setEnvironmentMap();
 		this.setEnvironmentModel();
 		this.setLampLights();
+		this.addParticles();
 	}
 
 	setSunLight() {
-		this.ambient = new THREE.AmbientLight("#ffffff", 0.5);
-		this.sunLight = new THREE.DirectionalLight("#ffffff", 2.5);
+		this.ambient = new THREE.AmbientLight("#ffffff", 0.4);
+		this.sunLight = new THREE.DirectionalLight("#ffffff", 0.8);
 		this.sunLight.castShadow = true;
 		this.sunLight.shadow.camera.near = 1;
 		this.sunLight.shadow.camera.far = 40;
@@ -77,7 +78,7 @@ export default class Environment {
 		this.environmentMap.texture.colorSpace = THREE.SRGBColorSpace;
 
 		this.scene.environment = this.environmentMap.texture;
-		this.scene.background = new Color(0xdfdfdf);
+		this.scene.background = new Color(0xbbbbbb);
 
 		this.environmentMap.updateMaterials = () => {
 			this.scene.traverse((child) => {
@@ -115,6 +116,7 @@ export default class Environment {
 			child.receiveShadow = true;
 			child.castShadow = true;
 			if (child instanceof THREE.Mesh) {
+				child.material = new THREE.MeshPhongMaterial();
 				child.material.map = this.halloweenBitsTexture;
 			}
 		});
@@ -172,5 +174,35 @@ export default class Environment {
 				.max(10)
 				.step(0.1);
 		}
+	}
+
+	addParticles() {
+		const particlesGeometry = new THREE.BufferGeometry();
+		const count = 250;
+
+		const positions = new Float32Array(count * 3); // Multiply by 3 because each position is composed of 3 values (x, y, z)
+
+		for (
+			let i = 0;
+			i < count * 3;
+			i++ // Multiply by 3 for same reason
+		) {
+			positions[i] = (Math.random() - 0.5) * 30; // Math.random() - 0.5 to have a random value between -0.5 and +0.5
+		}
+
+		particlesGeometry.setAttribute(
+			"position",
+			new THREE.BufferAttribute(positions, 3),
+		);
+		//Material
+		const particlesMaterial = new THREE.PointsMaterial({
+			size: 0.4,
+			sizeAttenuation: true,
+			color: 0xe05f0e,
+			transparent: true,
+			alphaMap: this.resources.items.particle,
+		});
+		const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+		this.scene.add(particles);
 	}
 }

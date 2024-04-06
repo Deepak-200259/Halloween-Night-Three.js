@@ -23,26 +23,26 @@ export default class Camera {
 
 	setInstance() {
 		this.instance = new THREE.PerspectiveCamera(
-			35,
+			40,
 			this.sizes.width / this.sizes.height,
 			0.1,
 			100,
 		);
-		this.instance.position.set(20, 30, 15);
+		this.instance.position.set(20, 0, 20);
 		this.scene.add(this.instance);
 	}
 
 	setControls() {
 		this.controls = new OrbitControls(this.instance, this.canvas);
 		this.controls.enableDamping = false;
-		this.controls.dampingFactor = 0.8;
+		this.controls.dampingFactor = 0.6;
 		this.controls.target = new Vector3(1, 0, -1);
 		this.controls.enablePan = false;
 		this.controls.enableZoom = true;
 		this.controls.minDistance = 10;
-		this.controls.maxDistance = 40;
-		this.controls.minPolarAngle = (Math.PI / 180) * 60;
-		this.controls.maxPolarAngle = (Math.PI / 180) * -60;
+		this.controls.maxDistance = 34;
+		this.controls.minPolarAngle = (Math.PI / 180) * 55;
+		this.controls.maxPolarAngle = (Math.PI / 180) * -55;
 		this.controls.minAzimuthAngle = -(Math.PI / 180) * 45;
 		this.controls.maxAzimuthAngle = (Math.PI / 180) * 45;
 

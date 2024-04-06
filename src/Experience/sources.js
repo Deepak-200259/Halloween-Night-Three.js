@@ -17,6 +17,11 @@ export default [
 		path: "textures/ghost_basecolor.jpg",
 	},
 	{
+		name: "particle",
+		type: "texture",
+		path: "textures/particles.png",
+	},
+	{
 		name: "graveBaseColor",
 		type: "texture",
 		path: "textures/grave_basecolor.jpg",

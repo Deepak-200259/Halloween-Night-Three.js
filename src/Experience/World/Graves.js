@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import Experience from "../Experience";
 import { graves } from "../sources";
+import gsap from "gsap";
 import { POSITIVE_X_ARRAY, POSITIVE_Z_ARRAY } from "./Constants";
 
 export default class Grave {
@@ -8,7 +9,7 @@ export default class Grave {
 		this.experience = new Experience();
 		this.scene = this.experience.scene;
 		this.resources = this.experience.resources;
-		this.addGraves();
+		this.gravesCoordinates = this.addGraves();
 	}
 
 	getRandomGraveNumber(gravesArray) {
@@ -21,17 +22,17 @@ export default class Grave {
 		const positionZArray = POSITIVE_Z_ARRAY;
 
 		let randomXValue, randomZValue;
-		while (
-			positions.some(
-				(coord) =>
-					(coord.x === positionXArray[randomXValue] &&
-						coord.z === positionZArray[randomZValue]) ||
-					(coord.x === 0 && coord.z === 0),
-			)
-		) {
+		do {
 			randomXValue = Math.floor(Math.random() * positionXArray.length);
 			randomZValue = Math.floor(Math.random() * positionZArray.length);
-		}
+		} while (
+			positions.some(
+				(coord) =>
+					coord.x === positionXArray[randomXValue] &&
+					coord.z === positionZArray[randomZValue],
+			) ||
+			(randomXValue === 0 && randomZValue === 0)
+		);
 
 		return { x: positionXArray[randomXValue], z: positionZArray[randomZValue] };
 	}
@@ -44,15 +45,35 @@ export default class Grave {
 			const grave = this.resources.items[graveName].scene.clone();
 			grave.traverse((child) => {
 				if (child instanceof THREE.Mesh) {
-					child.material.map = this.resources.items.graveBaseColor;
+					child.material = new THREE.MeshPhongMaterial();
+					child.material.map = this.resources.items.halloweenBitsTexture;
 					child.castShadow = true;
+					child.material.metalness = 1;
+					child.material.roughness = 0.8;
 				}
 			});
 			const randomPosition = this.getRandomPosition(coordinates);
 			coordinates.push(randomPosition); // Mark the position as occupied
 			grave.position.x = randomPosition.x;
+			grave.position.y = 7;
 			grave.position.z = randomPosition.z;
+			grave.visible = false;
+			setTimeout(() => {
+				grave.visible = true;
+				this.graveAddingAnimation(grave);
+			}, i * 200);
 			this.scene.add(grave);
 		}
+		return coordinates;
+	}
+
+	graveAddingAnimation(grave) {
+		gsap
+			.to(grave.position, { y: 0, duration: 0.5, ease: "power2.in" })
+			.then(() => {
+				gsap.to(grave.scale, { x: 1.2, y: 0.8, duration: 0.15 }).then(() => {
+					gsap.to(grave.scale, { x: 1, y: 1, duration: 0.15 });
+				});
+			});
 	}
 }

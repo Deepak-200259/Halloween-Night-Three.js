@@ -1,3 +1,8 @@
+@font-face {
+	font-family: halloween_spooky;
+	src: url(fonts/halloween_spooky.ttf);
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -49,6 +54,60 @@ body {
 	z-index: 10;
 	transition: opacity 2s ease-in-out;
 }
+
+#startGameScreen {
+	z-index: 1;
+	height: 100vh;
+	width: 100vw;
+	position: absolute;
+}
+
+#overlay {
+	height: 100vh;
+	width: 100vw;
+	background-image: url("./textures/HudImages/overlay.png");
+	position: absolute;
+	background-size: cover;
+	background-position: center;
+	filter: blur(7rem);
+	z-index: -1;
+	opacity: 0.75;
+}
+
+#startGameBtn {
+	font-family: halloween_spooky;
+	margin-top: 20%;
+	cursor: pointer;
+	font-size: 10vh;
+	color: rgb(1, 116, 30);
+	text-shadow: 3px 3px grey;
+}
+
+#contents {
+	display: flex;
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+#sound-btn {
+	scale: 0.4;
+	position: absolute;
+	margin-left: -100vw;
+	margin-top: -100vh;
+	transform: translate(6vw, 13vh);
+}
+
+#logo {
+	position: absolute;
+	margin-top: -30vh;
+	transform: translate(0vw, 0vh);
+}
+
 .pl {
 	width: 6.25em;
 	height: 6.25em;
