@@ -22,7 +22,7 @@ export default class Player {
 	startPlayerAnim() {
 		if (this.player) {
 			gsap
-				.to(this.player.position, { duration: 1.4, y: 0.6 })
+				.to(this.player.position, { duration: 1, y: 0.6 })
 				.then(() => this.playerBreatheAnim(this.player));
 		}
 	}
@@ -65,6 +65,7 @@ export default class Player {
 				child.material.side = THREE.DoubleSide;
 				child.material.map = this.playerColorTexture;
 				child.material.map.flipY = false;
+				child.material.transparent = true;
 				child.material.roughnessMap = this.playerRoughnessTexture;
 				child.castShadow = true;
 			}
@@ -292,4 +293,49 @@ export default class Player {
 				duration: 0.15,
 			});
 	}
+
+	dieAndBecomeInvincible() {
+		this.player.children[0].material.map = null;
+		this.player.children[0].material.color = new THREE.Color(0xffffff);
+		this.player.children[0].material.needsUpdate = true;
+
+		const playerDieTimeline = gsap.timeline();
+		const invisibleTimeline = gsap.timeline();
+
+		gsap.to(this.player.children[0].material, {
+			opacity: 0,
+			duration: 1,
+		});
+		playerDieTimeline
+			.to(this.player.position, {
+				y: 3,
+				duration: 1,
+				onComplete: () => {
+					this.player.visible = false;
+					this.player.position.set(0, 2, 0);
+					this.player.children[0].material.map = this.playerColorTexture;
+					this.player.children[0].material.needsUpdate = true;
+				},
+				delay: 0.25,
+			})
+			.then(() => {
+				this.player.visible = true;
+				this.player.rotation.y = 0;
+				this.startPlayerAnim();
+			})
+			.then(() => {
+				invisibleTimeline
+					.to(this.player.children[0].material, {
+						opacity: 0.5,
+						duration: 0.25,
+					})
+					.to(this.player.children[0].material, { opacity: 1, duration: 0.25 })
+					.repeat(10)
+					.then(() => {
+						this.experience.isInvincible = false;
+					});
+			});
+	}
+
+	update() {}
 }

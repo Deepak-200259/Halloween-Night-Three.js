@@ -21,6 +21,14 @@ export default class Experience {
 		}
 		instance = this;
 
+		this.soundEnabled = true;
+		this.lives = 3;
+		this.round = 1;
+		this.score = 0;
+		this.isInvincible = false;
+		this.gameStarted = true;
+		this.gameEnded = false;
+
 		// Global access
 		window.experience = this;
 

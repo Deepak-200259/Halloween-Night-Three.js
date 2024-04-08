@@ -32,5 +32,7 @@ export default class World {
 		this.ghost = new Ghost(GHOST_TYPE.WHITE_GHOST);
 	}
 
-	update() {}
+	update() {
+		this.ghost && this.ghost.update();
+	}
 }

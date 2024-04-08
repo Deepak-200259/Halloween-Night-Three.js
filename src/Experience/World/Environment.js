@@ -200,6 +200,7 @@ export default class Environment {
 			sizeAttenuation: true,
 			color: 0xe05f0e,
 			transparent: true,
+			alphaTest: 0.5,
 			alphaMap: this.resources.items.particle,
 		});
 		const particles = new THREE.Points(particlesGeometry, particlesMaterial);

@@ -194,4 +194,33 @@ export default class Ghost {
 			}
 		}
 	}
+
+	update() {
+		if (!this.experience.gameEnded) {
+			if (this.experience.score > 1000) {
+				this.experience.round += 1;
+				this.experience.hud.updateRounds();
+			}
+
+			if (this.experience.lives > 0 && this.experience.isInvincible === false) {
+				for (let i = 0; i < this.ghotsCurrentlyInScene.length; i++) {
+					if (
+						Math.round(this.ghotsCurrentlyInScene[i].position.x) ===
+							this.experience.world.player.player.position.x &&
+						Math.round(this.ghotsCurrentlyInScene[i].position.z) ===
+							this.experience.world.player.player.position.z
+					) {
+						this.experience.isInvincible = true;
+						this.experience.world.player.dieAndBecomeInvincible();
+						this.experience.lives -= 1;
+						this.experience.hud.updateLives();
+					}
+				}
+			}
+
+			if (this.experience.lives === 0) {
+				this.experience.gameEnded = true;
+			}
+		}
+	}
 }
