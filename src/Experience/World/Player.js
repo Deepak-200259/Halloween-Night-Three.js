@@ -21,17 +21,18 @@ export default class Player {
 
 	startPlayerAnim() {
 		if (this.player) {
-			gsap
-				.to(this.player.position, { duration: 1, y: 0.6 })
-				.then(() => this.playerBreatheAnim(this.player));
+			this.playInvinsibleAnimation();
+			gsap.to(this.player.position, { duration: 1, y: 0.6 }).then(() => {
+				this.playPlayerBreatheAnimation();
+			});
 		}
 	}
 
-	playerBreatheAnim(player) {
+	playPlayerBreatheAnimation() {
 		gsap
 			.timeline()
-			.to(player.scale, { duration: 0.5, y: 0.75, x: 1.15, z: 1.15 })
-			.to(player.scale, { duration: 0.5, y: 1, x: 1, z: 1 })
+			.to(this.player.scale, { duration: 0.5, y: 0.75, x: 1.15, z: 1.15 })
+			.to(this.player.scale, { duration: 0.5, y: 1, x: 1, z: 1 })
 			.delay(1)
 			.repeat(Infinity);
 	}
@@ -61,6 +62,7 @@ export default class Player {
 		this.scene.add(this.player);
 		this.player.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
+				this.playerBoundingBox = new THREE.Box3().setFromObject(child);
 				child.material = new THREE.MeshPhongMaterial();
 				child.material.side = THREE.DoubleSide;
 				child.material.map = this.playerColorTexture;
@@ -119,11 +121,24 @@ export default class Player {
 		});
 	}
 
+	checkPositionToHideGateArch() {
+		if (
+			(this.player.position.x === -2 ||
+				this.player.position.x === 0 ||
+				this.player.position.x === 2 ||
+				this.player.position.x === 4) &&
+			this.player.position.z === 6
+		) {
+			this.experience.world.gateArch.hideGateArch();
+		} else {
+			this.experience.world.gateArch.showGateArch();
+		}
+	}
+
 	moveCharacter(movementDirection, rotation) {
 		this.isAnimationPlaying = true;
 		switch (movementDirection) {
 			case "Right": {
-				console.log("RIGHT WORKING", this.player.position.x);
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -136,25 +151,12 @@ export default class Player {
 					gsap.to(this.player.position, {
 						x: this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
 						duration: 0.35,
-						onComplete: () => {
-							if (
-								(this.player.position.x === -2 ||
-									this.player.position.x === 0 ||
-									this.player.position.x === 2 ||
-									this.player.position.x === 4) &&
-								this.player.position.z === 6
-							) {
-								this.experience.world.gateArch.hideGateArch();
-							} else {
-								this.experience.world.gateArch.showGateArch();
-							}
-						},
+						onComplete: () => this.checkPositionToHideGateArch(),
 					});
 				}
 				break;
 			}
 			case "Left": {
-				console.log("LEFT WORKING", this.player.position.x);
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -167,25 +169,12 @@ export default class Player {
 					gsap.to(this.player.position, {
 						x: this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
 						duration: 0.35,
-						onComplete: () => {
-							if (
-								(this.player.position.x === -2 ||
-									this.player.position.x === 0 ||
-									this.player.position.x === 2 ||
-									this.player.position.x === 4) &&
-								this.player.position.z === 6
-							) {
-								this.experience.world.gateArch.hideGateArch();
-							} else {
-								this.experience.world.gateArch.showGateArch();
-							}
-						},
+						onComplete: () => this.checkPositionToHideGateArch(),
 					});
 				}
 				break;
 			}
 			case "Up": {
-				console.log("UP WORKING", this.player.position.x);
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -198,25 +187,12 @@ export default class Player {
 					gsap.to(this.player.position, {
 						z: this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
 						duration: 0.35,
-						onComplete: () => {
-							if (
-								(this.player.position.x === -2 ||
-									this.player.position.x === 0 ||
-									this.player.position.x === 2 ||
-									this.player.position.x === 4) &&
-								this.player.position.z === 6
-							) {
-								this.experience.world.gateArch.hideGateArch();
-							} else {
-								this.experience.world.gateArch.showGateArch();
-							}
-						},
+						onComplete: () => this.checkPositionToHideGateArch(),
 					});
 				}
 				break;
 			}
 			case "Down": {
-				console.log("DOWN WORKING", this.player.position.x);
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -229,19 +205,7 @@ export default class Player {
 					gsap.to(this.player.position, {
 						z: this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
 						duration: 0.35,
-						onComplete: () => {
-							if (
-								(this.player.position.x === -2 ||
-									this.player.position.x === 0 ||
-									this.player.position.x === 2 ||
-									this.player.position.x === 4) &&
-								this.player.position.z === 6
-							) {
-								this.experience.world.gateArch.hideGateArch();
-							} else {
-								this.experience.world.gateArch.showGateArch();
-							}
-						},
+						onComplete: () => this.checkPositionToHideGateArch(),
 					});
 				}
 				break;
@@ -294,13 +258,31 @@ export default class Player {
 			});
 	}
 
+	playInvinsibleAnimation() {
+		const invisibleTimeline = gsap.timeline();
+		invisibleTimeline
+			.fromTo(
+				this.player.children[0].material,
+				{ opacity: 1 },
+				{ opacity: 0.25, duration: 0.25 },
+			)
+			.fromTo(
+				this.player.children[0].material,
+				{ opacity: 0.25 },
+				{ opacity: 1, duration: 0.25 },
+			)
+			.repeat(10)
+			.then(() => {
+				this.experience.isInvincible = false;
+			});
+	}
+
 	dieAndBecomeInvincible() {
 		this.player.children[0].material.map = null;
 		this.player.children[0].material.color = new THREE.Color(0xffffff);
 		this.player.children[0].material.needsUpdate = true;
 
 		const playerDieTimeline = gsap.timeline();
-		const invisibleTimeline = gsap.timeline();
 
 		gsap.to(this.player.children[0].material, {
 			opacity: 0,
@@ -322,18 +304,6 @@ export default class Player {
 				this.player.visible = true;
 				this.player.rotation.y = 0;
 				this.startPlayerAnim();
-			})
-			.then(() => {
-				invisibleTimeline
-					.to(this.player.children[0].material, {
-						opacity: 0.5,
-						duration: 0.25,
-					})
-					.to(this.player.children[0].material, { opacity: 1, duration: 0.25 })
-					.repeat(10)
-					.then(() => {
-						this.experience.isInvincible = false;
-					});
 			});
 	}
 

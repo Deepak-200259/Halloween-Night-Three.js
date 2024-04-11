@@ -16,11 +16,16 @@ export default class Ghost {
 
 		this.resources = this.experience.resources;
 		this.ghotsCurrentlyInScene = [];
+		this.boundingBoxesOfGhosts = [];
 
-		setInterval(() => {
-			const { selectedghost, ghostPos } = this.selectGhost(ghostType);
-			this.setupGhost(selectedghost, ghostPos, ghostPos.directionToMoveArray);
-		}, 2000);
+		const ghostSpawnInterval = setInterval(() => {
+			if (!this.experience.gameEnded) {
+				const { selectedghost, ghostPos } = this.selectGhost(ghostType);
+				this.setupGhost(selectedghost, ghostPos, ghostPos.directionToMoveArray);
+			} else {
+				clearInterval(ghostSpawnInterval);
+			}
+		}, 4500);
 	}
 
 	selectGhost(ghostType) {
@@ -68,6 +73,8 @@ export default class Ghost {
 		ghost.children[0].material.opacity = 0;
 		ghost.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
+				const ghostBoundingBox = new THREE.Box3().setFromObject(child);
+				this.boundingBoxesOfGhosts.push(ghostBoundingBox);
 				child.material = new THREE.MeshPhongMaterial();
 				child.material.map = this.experience.resources.items.ghostBaseColor;
 				child.material.map.flipY = false;
@@ -175,6 +182,7 @@ export default class Ghost {
 
 	disposeObject(obj) {
 		if (obj !== null) {
+			console.log("working");
 			for (let i = 0; i < obj.children.length; i++) {
 				this.disposeObject(obj.children[i]);
 			}
@@ -192,7 +200,19 @@ export default class Ghost {
 			if (obj.texture) {
 				obj.texture.dispose();
 			}
+			obj.removeFromParent();
+			if (
+				this.ghotsCurrentlyInScene[0] !== null ||
+				this.ghotsCurrentlyInScene[0] !== undefined
+			) {
+				this.ghotsCurrentlyInScene.shift();
+			}
 		}
+	}
+
+	updateBoundingBox(object, box) {
+		box.setFromObject(object);
+		return box;
 	}
 
 	update() {
@@ -201,21 +221,30 @@ export default class Ghost {
 				this.experience.round += 1;
 				this.experience.hud.updateRounds();
 			}
+			if (this.experience.lives > 0) {
+				if (this.experience.isInvincible === false) {
+					const playerBox = this.updateBoundingBox(
+						this.experience.world.player.player.children[0],
+						this.experience.world.player.playerBoundingBox,
+					);
+					for (let i = 0; i < this.ghotsCurrentlyInScene.length; i++) {
+						if (this.ghotsCurrentlyInScene[i]) {
+							const ghostBox = this.updateBoundingBox(
+								this.ghotsCurrentlyInScene[i].children[0],
+								this.boundingBoxesOfGhosts[i],
+							);
 
-			if (this.experience.lives > 0 && this.experience.isInvincible === false) {
-				for (let i = 0; i < this.ghotsCurrentlyInScene.length; i++) {
-					if (
-						Math.round(this.ghotsCurrentlyInScene[i].position.x) ===
-							this.experience.world.player.player.position.x &&
-						Math.round(this.ghotsCurrentlyInScene[i].position.z) ===
-							this.experience.world.player.player.position.z
-					) {
-						this.experience.isInvincible = true;
-						this.experience.world.player.dieAndBecomeInvincible();
-						this.experience.lives -= 1;
-						this.experience.hud.updateLives();
+							if (ghostBox.intersectsBox(playerBox)) {
+								this.experience.isInvincible = true;
+								this.experience.world.player.dieAndBecomeInvincible();
+								this.experience.lives -= 1;
+								this.experience.hud.updateLives();
+							}
+						}
 					}
 				}
+			} else {
+				this.experience.gameEnded = true;
 			}
 
 			if (this.experience.lives === 0) {

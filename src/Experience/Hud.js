@@ -12,9 +12,13 @@ export default class HUD {
 		document.getElementById("startGameScreen").style.display = "none";
 		this.experience.world.startGame();
 		this.createInGameHudUI();
-		setInterval(() => {
-			this.experience.score += 30;
-			this.updateScore();
+		const scoreInterval = setInterval(() => {
+			if (!this.experience.gameEnded) {
+				this.experience.score += 30;
+				this.updateScore();
+			} else {
+				clearInterval(scoreInterval);
+			}
 		}, 1000);
 	}
 

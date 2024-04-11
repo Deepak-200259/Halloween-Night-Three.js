@@ -25,7 +25,7 @@ export default class Experience {
 		this.lives = 3;
 		this.round = 1;
 		this.score = 0;
-		this.isInvincible = false;
+		this.isInvincible = true;
 		this.gameStarted = true;
 		this.gameEnded = false;
 
