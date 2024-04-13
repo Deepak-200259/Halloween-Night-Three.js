@@ -7,6 +7,7 @@ import Ghost from "./Ghost.js";
 import Grave from "./Graves.js";
 import Ground from "./Ground.js";
 import Player from "./Player.js";
+import PowerUps from "./Powerups.js";
 
 export default class World {
 	constructor() {
@@ -21,7 +22,7 @@ export default class World {
 			this.gateArch = new GateArch();
 			this.ground = new Ground();
 			setTimeout(() => {
-				document.getElementById("bike").style.display = "none";
+				document.getElementById("loader").style.display = "none";
 			}, 1000);
 		});
 	}
@@ -30,6 +31,7 @@ export default class World {
 		this.graves = new Grave();
 		this.player = new Player();
 		this.ghost = new Ghost(GHOST_TYPE.WHITE_GHOST);
+		this.powerUps = new PowerUps();
 	}
 
 	update() {

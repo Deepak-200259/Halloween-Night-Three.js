@@ -42,7 +42,7 @@ body {
 	place-items: center;
 }
 
-#bike {
+#loader {
 	display: flex;
 	position: absolute;
 	background-color: #dfdfdf;

@@ -23,3 +23,9 @@ export const KEYS = {
 	SMALL_D: "d",
 	CAPITAL_D: "D",
 };
+
+export const POWERUPS = {
+	SPEED_UP: "Speedup",
+	SLOW_DOWN: "SlowDown",
+	INVINCIBLE: "Invincible",
+};

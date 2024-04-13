@@ -145,88 +145,92 @@ export default class Player {
 	}
 
 	moveCharacter(movementDirection, rotation) {
-		this.isAnimationPlaying = true;
-		switch (movementDirection) {
-			case "Right": {
-				this.playJumpSound();
-				if (
-					!this.checkIfPositionIsAvailable(
-						new THREE.Vector3(
-							this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
-							this.player.position.y,
-							this.player.position.z,
-						),
-					)
-				) {
-					gsap.to(this.player.position, {
-						x: this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
-						duration: 0.35,
-						onComplete: () => this.checkPositionToHideGateArch(),
-					});
+		if (!this.experience.gameEnded) {
+			this.isAnimationPlaying = true;
+			switch (movementDirection) {
+				case "Right": {
+					this.playJumpSound();
+					if (
+						!this.checkIfPositionIsAvailable(
+							new THREE.Vector3(
+								this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
+								this.player.position.y,
+								this.player.position.z,
+							),
+						)
+					) {
+						gsap.to(this.player.position, {
+							x: this.player.position.x !== 8 ? this.player.position.x + 2 : 8,
+							duration: 0.35,
+							onComplete: () => this.checkPositionToHideGateArch(),
+						});
+					}
+					break;
 				}
-				break;
-			}
-			case "Left": {
-				this.playJumpSound();
-				if (
-					!this.checkIfPositionIsAvailable(
-						new THREE.Vector3(
-							this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
-							this.player.position.y,
-							this.player.position.z,
-						),
-					)
-				) {
-					gsap.to(this.player.position, {
-						x: this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
-						duration: 0.35,
-						onComplete: () => this.checkPositionToHideGateArch(),
-					});
+				case "Left": {
+					this.playJumpSound();
+					if (
+						!this.checkIfPositionIsAvailable(
+							new THREE.Vector3(
+								this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
+								this.player.position.y,
+								this.player.position.z,
+							),
+						)
+					) {
+						gsap.to(this.player.position, {
+							x:
+								this.player.position.x !== -6 ? this.player.position.x - 2 : -6,
+							duration: 0.35,
+							onComplete: () => this.checkPositionToHideGateArch(),
+						});
+					}
+					break;
 				}
-				break;
-			}
-			case "Up": {
-				this.playJumpSound();
-				if (
-					!this.checkIfPositionIsAvailable(
-						new THREE.Vector3(
-							this.player.position.x,
-							this.player.position.y,
-							this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
-						),
-					)
-				) {
-					gsap.to(this.player.position, {
-						z: this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
-						duration: 0.35,
-						onComplete: () => this.checkPositionToHideGateArch(),
-					});
+				case "Up": {
+					this.playJumpSound();
+					if (
+						!this.checkIfPositionIsAvailable(
+							new THREE.Vector3(
+								this.player.position.x,
+								this.player.position.y,
+								this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
+							),
+						)
+					) {
+						gsap.to(this.player.position, {
+							z:
+								this.player.position.z !== -8 ? this.player.position.z - 2 : -8,
+							duration: 0.35,
+							onComplete: () => this.checkPositionToHideGateArch(),
+						});
+					}
+					break;
 				}
-				break;
-			}
-			case "Down": {
-				this.playJumpSound();
-				if (
-					!this.checkIfPositionIsAvailable(
-						new THREE.Vector3(
-							this.player.position.x,
-							this.player.position.y,
-							this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
-						),
-					)
-				) {
-					gsap.to(this.player.position, {
-						z: this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
-						duration: 0.35,
-						onComplete: () => this.checkPositionToHideGateArch(),
-					});
+				case "Down": {
+					this.playJumpSound();
+					if (
+						!this.checkIfPositionIsAvailable(
+							new THREE.Vector3(
+								this.player.position.x,
+								this.player.position.y,
+								this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
+							),
+						)
+					) {
+						gsap.to(this.player.position, {
+							z: this.player.position.z !== 6 ? this.player.position.z + 2 : 6,
+							duration: 0.35,
+							onComplete: () => this.checkPositionToHideGateArch(),
+						});
+					}
+					break;
 				}
-				break;
 			}
+			this.rotationAnimation(rotation);
+			this.jumpingAnimation();
+			this.jumpingScaleAnimation();
 		}
-		this.rotationAnimation(rotation);
-		this.jumpingAnimation();
-		this.jumpingScaleAnimation();
 	}
 
 	playJumpSound() {
@@ -296,18 +300,18 @@ export default class Player {
 			});
 	}
 
-	dieAndBecomeInvincible() {
+	respawnAnimation() {
 		this.player.children[0].material.map = null;
 		this.player.children[0].material.color = new THREE.Color(0xffffff);
 		this.player.children[0].material.needsUpdate = true;
 
-		const playerDieTimeline = gsap.timeline();
+		const playerDieAndRespawnTimeLine = gsap.timeline();
 
 		gsap.to(this.player.children[0].material, {
 			opacity: 0,
 			duration: 1,
 		});
-		playerDieTimeline
+		playerDieAndRespawnTimeLine
 			.to(this.player.position, {
 				y: 3,
 				duration: 1,
@@ -324,6 +328,32 @@ export default class Player {
 				this.player.rotation.y = 0;
 				this.startPlayerAnim();
 			});
+	}
+
+	dieAnimation() {
+		gsap.killTweensOf(this.player.scale);
+		const grave = this.resources.items.playerGrave.scene.clone();
+		grave.traverse((child) => {
+			if (child instanceof THREE.Mesh) {
+				child.material = new THREE.MeshPhongMaterial();
+				child.castShadow = true;
+				child.material.metalness = 1;
+				child.material.roughness = 0.8;
+			}
+		});
+		grave.position.copy(this.player.position);
+		grave.position.y = 10;
+		this.scene.add(grave);
+		const graveAddTimeline = gsap.timeline();
+		graveAddTimeline
+			.to(grave.position, { y: 0.1, duration: 0.5 })
+			.to(grave.scale, { x: 1.2, y: 0.8, duration: 0.2 })
+			.to(grave.scale, { x: 1, y: 1, duration: 0.2 });
+
+		const playerDieTimeline = gsap.timeline();
+		playerDieTimeline
+			.to(this.player.scale, { y: 0.02, duration: 0.25 })
+			.to(this.player.position, { y: 0.1, duration: 0.25 });
 	}
 
 	update() {}

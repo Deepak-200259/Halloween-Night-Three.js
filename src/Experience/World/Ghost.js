@@ -252,9 +252,11 @@ export default class Ghost {
 									);
 								}
 								this.experience.isInvincible = true;
-								this.experience.world.player.dieAndBecomeInvincible();
 								this.experience.lives -= 1;
 								this.experience.hud.updateLives();
+								if (this.experience.lives !== 0) {
+									this.experience.world.player.respawnAnimation();
+								}
 							}
 						}
 					}
@@ -266,6 +268,7 @@ export default class Ghost {
 						this.resources.items.deathSound,
 					);
 				}
+				this.experience.world.player.dieAnimation();
 			}
 		}
 	}
