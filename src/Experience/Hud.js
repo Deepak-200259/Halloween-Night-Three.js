@@ -3,9 +3,14 @@ import Experience from "./Experience";
 export default class HUD {
 	constructor() {
 		this.experience = new Experience();
-		document
-			.getElementById("startGameBtn")
-			.addEventListener("click", this.startGame.bind(this));
+		this.resources = this.experience.resources;
+		this.audioManager = this.experience.audioManager;
+		document.getElementById("startGameBtn").addEventListener("click", () => {
+			this.experience.soundEnabled
+				? this.audioManager.playAudio(this.resources.items.clickSound)
+				: null;
+			this.startGame();
+		});
 	}
 
 	startGame() {
@@ -31,19 +36,22 @@ export default class HUD {
 
 		const soundImg = document.createElement("img");
 		soundImg.className = "sound-Image";
-		soundImg.src = "./textures/HudImages/sound-icon.png";
+		soundImg.src = this.experience.soundEnabled
+			? "./textures/HudImages/sound-icon.png"
+			: "./textures/HudImages/sound-icon-mute.png";
 
 		soundIconDiv.appendChild(soundImg);
 
 		soundIconDiv.addEventListener("click", (e) => {
 			e.preventDefault();
-			if (this.experience.soundEnabled === true) {
-				console.log("Called");
+			if (this.experience.soundEnabled === false) {
+				this.experience.soundEnabled = true;
+				this.audioManager.playAudio(this.resources.items.clickSound);
 				soundImg.src = "./textures/HudImages/sound-icon.png";
 			} else {
+				this.experience.soundEnabled = false;
 				soundImg.src = "./textures/HudImages/sound-icon-mute.png";
 			}
-			this.experience.soundEnabled = !this.experience.soundEnabled;
 		});
 		gameHUD.appendChild(soundIconDiv);
 

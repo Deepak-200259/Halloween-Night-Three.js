@@ -14,4 +14,12 @@ export const KEYS = {
 	ARROW_RIGHT: "ArrowRight",
 	ARROW_UP: "ArrowUp",
 	ARROW_DOWN: "ArrowDown",
+	SMALL_W: "w",
+	CAPITAL_W: "W",
+	SMALL_S: "s",
+	CAPITAL_S: "S",
+	SMALL_A: "a",
+	CAPITAL_A: "A",
+	SMALL_D: "d",
+	CAPITAL_D: "D",
 };

@@ -151,6 +151,46 @@ export default [
 		type: "gltfModel",
 		path: "models/smallCandy.glb",
 	},
+	{
+		name: "clickSound",
+		type: "audio",
+		path: "audio/click.mp3",
+	},
+	{
+		name: "collectSound",
+		type: "audio",
+		path: "audio/collect.mp3",
+	},
+	{
+		name: "deathSound",
+		type: "audio",
+		path: "audio/death.mp3",
+	},
+	{
+		name: "gameOverSound",
+		type: "audio",
+		path: "audio/game-over.mp3",
+	},
+	{
+		name: "jumpSound",
+		type: "audio",
+		path: "audio/jump.mp3",
+	},
+	{
+		name: "musicSound",
+		type: "audio",
+		path: "audio/music.mp3",
+	},
+	{
+		name: "obstacleFallSound",
+		type: "audio",
+		path: "audio/obstacle-fall.mp3",
+	},
+	{
+		name: "smashSound",
+		type: "audio",
+		path: "audio/smash.mp3",
+	},
 ];
 
 export const graves = [

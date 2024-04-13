@@ -74,6 +74,11 @@ export default class Grave {
 				gsap.to(grave.scale, { x: 1.2, y: 0.8, duration: 0.15 }).then(() => {
 					gsap.to(grave.scale, { x: 1, y: 1, duration: 0.15 });
 				});
+				if (this.experience.soundEnabled) {
+					this.experience.audioManager.playAudio(
+						this.resources.items.obstacleFallSound,
+					);
+				}
 			});
 	}
 }

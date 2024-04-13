@@ -10,6 +10,7 @@ import Resources from "./Utils/Resources.js";
 
 import sources from "./sources.js";
 import HUD from "./Hud.js";
+import AudioManager from "./Managers/AudioManager.js";
 
 let instance = null;
 
@@ -43,6 +44,7 @@ export default class Experience {
 		this.resources = new Resources(sources);
 		this.camera = new Camera();
 		this.renderer = new Renderer();
+		this.audioManager = new AudioManager();
 		this.world = new World();
 		this.hud = new HUD();
 

@@ -99,20 +99,29 @@ export default class Player {
 		window.addEventListener("keydown", (event) => {
 			let characterRotation = 0;
 			if (!this.isAnimationPlaying) {
+				console.log(event.key);
 				switch (event.key) {
 					case KEYS.ARROW_RIGHT:
+					case KEYS.CAPITAL_D:
+					case KEYS.SMALL_D:
 						characterRotation = Math.PI / 2;
 						this.moveCharacter("Right", characterRotation);
 						break;
 					case KEYS.ARROW_LEFT:
+					case KEYS.CAPITAL_A:
+					case KEYS.SMALL_A:
 						characterRotation = -Math.PI / 2;
 						this.moveCharacter("Left", characterRotation);
 						break;
 					case KEYS.ARROW_UP:
+					case KEYS.CAPITAL_W:
+					case KEYS.SMALL_W:
 						characterRotation = Math.PI;
 						this.moveCharacter("Up", characterRotation);
 						break;
 					case KEYS.ARROW_DOWN:
+					case KEYS.CAPITAL_S:
+					case KEYS.SMALL_S:
 						characterRotation = 0;
 						this.moveCharacter("Down", characterRotation);
 						break;
@@ -139,6 +148,7 @@ export default class Player {
 		this.isAnimationPlaying = true;
 		switch (movementDirection) {
 			case "Right": {
+				this.playJumpSound();
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -157,6 +167,7 @@ export default class Player {
 				break;
 			}
 			case "Left": {
+				this.playJumpSound();
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -175,6 +186,7 @@ export default class Player {
 				break;
 			}
 			case "Up": {
+				this.playJumpSound();
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -193,6 +205,7 @@ export default class Player {
 				break;
 			}
 			case "Down": {
+				this.playJumpSound();
 				if (
 					!this.checkIfPositionIsAvailable(
 						new THREE.Vector3(
@@ -214,6 +227,12 @@ export default class Player {
 		this.rotationAnimation(rotation);
 		this.jumpingAnimation();
 		this.jumpingScaleAnimation();
+	}
+
+	playJumpSound() {
+		if (this.experience.soundEnabled) {
+			this.experience.audioManager.playAudio(this.resources.items.jumpSound);
+		}
 	}
 
 	rotationAnimation(rotation) {
