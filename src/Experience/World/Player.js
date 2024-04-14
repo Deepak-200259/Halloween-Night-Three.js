@@ -62,7 +62,7 @@ export default class Player {
 		this.scene.add(this.player);
 		this.player.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
-				this.playerBoundingBox = new THREE.Box3().setFromObject(child);
+				this.playerBoundingBox = new THREE.Box3().setFromObject(child, true);
 				child.material = new THREE.MeshPhongMaterial();
 				child.material.side = THREE.DoubleSide;
 				child.material.map = this.playerColorTexture;
@@ -99,7 +99,6 @@ export default class Player {
 		window.addEventListener("keydown", (event) => {
 			let characterRotation = 0;
 			if (!this.isAnimationPlaying) {
-				console.log(event.key);
 				switch (event.key) {
 					case KEYS.ARROW_RIGHT:
 					case KEYS.CAPITAL_D:
@@ -240,9 +239,10 @@ export default class Player {
 	}
 
 	rotationAnimation(rotation) {
+		console.log("ROTATION DURATION", 0.25 * this.experience.playerSpeed);
 		gsap.to(this.player.rotation, {
 			y: rotation,
-			duration: 0.25,
+			duration: 0.25 * this.experience.playerSpeed,
 		});
 	}
 
@@ -251,12 +251,12 @@ export default class Player {
 		positioningTimeling
 			.to(this.player.position, {
 				y: 2,
-				duration: 0.2,
+				duration: 0.2 * this.experience.playerSpeed,
 				ease: "power2.out",
 			})
 			.to(this.player.position, {
 				y: 0.6,
-				duration: 0.15,
+				duration: 0.15 * this.experience.playerSpeed,
 				ease: "power2.in",
 				onComplete: () => {
 					this.isAnimationPlaying = false;
@@ -271,13 +271,13 @@ export default class Player {
 				x: 0.8,
 				y: 1.2,
 				z: 0.8,
-				duration: 0.2,
+				duration: 0.2 * this.experience.playerSpeed,
 			})
 			.to(this.player.scale, {
 				x: 1,
 				y: 1,
 				z: 1,
-				duration: 0.15,
+				duration: 0.15 * this.experience.playerSpeed,
 			});
 	}
 
@@ -335,7 +335,6 @@ export default class Player {
 		const grave = this.resources.items.playerGrave.scene.clone();
 		grave.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
-				child.material = new THREE.MeshPhongMaterial();
 				child.castShadow = true;
 				child.material.metalness = 1;
 				child.material.roughness = 0.8;
@@ -356,5 +355,28 @@ export default class Player {
 			.to(this.player.position, { y: 0.1, duration: 0.25 });
 	}
 
-	update() {}
+	update() {
+		if (!this.experience.gameEnded) {
+			if (this.experience.world.powerUps.currentPowerup) {
+				const PlayerBox = this.playerBoundingBox;
+				const powerupBox =
+					this.experience.world.powerUps.currentPowerupBoundingBox;
+				const powerup =
+					this.experience.world.powerUps.currentPowerup.children[0];
+
+				PlayerBox.setFromObject(this.player.children[0]);
+				if (powerupBox) {
+					powerupBox.setFromObject(powerup);
+					if (
+						!this.experience.powerupActive &&
+						powerupBox?.intersectsBox(PlayerBox)
+					) {
+						console.log("POWERUP SELECTED");
+						this.experience.powerupActive = true;
+						this.experience.world.powerUps.powerupChoosen();
+					}
+				}
+			}
+		}
+	}
 }

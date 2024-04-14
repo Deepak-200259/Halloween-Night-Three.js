@@ -27,6 +27,9 @@ export default class Experience {
 		this.round = 1;
 		this.score = 0;
 		this.isInvincible = true;
+		this.playerSpeed = 1;
+		this.ghostsSpeed = 1;
+		this.powerupActive = false;
 		this.gameStarted = true;
 		this.gameEnded = false;
 

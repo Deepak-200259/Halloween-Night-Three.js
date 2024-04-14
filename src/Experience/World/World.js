@@ -28,13 +28,14 @@ export default class World {
 	}
 
 	startGame() {
+		this.powerUps = new PowerUps();
 		this.graves = new Grave();
 		this.player = new Player();
 		this.ghost = new Ghost(GHOST_TYPE.WHITE_GHOST);
-		this.powerUps = new PowerUps();
 	}
 
 	update() {
 		this.ghost && this.ghost.update();
+		this.player && this.player.update();
 	}
 }

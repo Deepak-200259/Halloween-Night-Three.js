@@ -25,7 +25,7 @@ export const KEYS = {
 };
 
 export const POWERUPS = {
-	SPEED_UP: "Speedup",
-	SLOW_DOWN: "SlowDown",
-	INVINCIBLE: "Invincible",
+	SPEED_UP: "SPEED_UP",
+	SLOW_DOWN: "SLOW_DOWN",
+	INVINCIBLE: "INVINCIBLE",
 };

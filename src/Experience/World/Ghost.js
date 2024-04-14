@@ -78,7 +78,7 @@ export default class Ghost {
 		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
 		ghost.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
-				const ghostBoundingBox = new THREE.Box3().setFromObject(child);
+				const ghostBoundingBox = new THREE.Box3().setFromObject(child, true);
 				this.boundingBoxesOfGhosts.push(ghostBoundingBox);
 				child.material = new THREE.MeshPhongMaterial();
 				child.material.map = this.experience.resources.items.ghostBaseColor;
@@ -107,38 +107,43 @@ export default class Ghost {
 	}
 
 	playWhiteGhostMovementAnimation(ghost, movementObj) {
-		gsap.fromTo(ghost.position, { y: 3 }, { y: 0.6, duration: 1 }).then(() => {
-			let ghostAnimations = [];
-			let totalAnimations = movementObj.directionArray.length; // To keep track of total animations completed
+		gsap
+			.fromTo(
+				ghost.position,
+				{ y: 3 },
+				{ y: 0.6, duration: 1 * this.experience.ghostsSpeed },
+			)
+			.then(() => {
+				let ghostAnimations = [];
+				let totalAnimations = movementObj.directionArray.length; // To keep track of total animations completed
+				movementObj.directionArray.forEach((direction, index) => {
+					let animation = gsap.to(ghost.position, {
+						x: movementObj.x !== undefined ? ghost.position.x : direction,
+						z: movementObj.z !== undefined ? ghost.position.z : direction,
+						duration: 6 * this.experience.ghostsSpeed,
+						ease: "none",
+						onComplete: () => {
+							// When this animation completes, decrement the totalAnimations count
+							totalAnimations--;
 
-			movementObj.directionArray.forEach((direction, index) => {
-				let animation = gsap.to(ghost.position, {
-					x: movementObj.x !== undefined ? ghost.position.x : direction,
-					z: movementObj.z !== undefined ? ghost.position.z : direction,
-					duration: 6,
-					ease: "none",
-					onComplete: () => {
-						// When this animation completes, decrement the totalAnimations count
-						totalAnimations--;
-
-						// If all animations are completed, play the reverse animations
-						if (totalAnimations === 0) {
-							reverseAllAnimations();
-						}
-					},
+							// If all animations are completed, play the reverse animations
+							if (totalAnimations === 0) {
+								reverseAllAnimations();
+							}
+						},
+					});
+					ghostAnimations.push(animation);
 				});
-				ghostAnimations.push(animation);
+
+				const reverseAllAnimations = () => {
+					ghostAnimations.forEach((animation) => animation.reverse());
+					gsap.to(ghost.rotation, {
+						y: ghost.rotation.y + Math.PI,
+						duration: 0.1 * this.experience.ghostsSpeed,
+						ease: "none",
+					});
+				};
 			});
-
-			const reverseAllAnimations = () => {
-				ghostAnimations.forEach((animation) => animation.reverse());
-				gsap.to(ghost.rotation, {
-					y: ghost.rotation.y + Math.PI,
-					duration: 0.1,
-					ease: "none",
-				});
-			};
-		});
 	}
 
 	CheckDirectionToMoveGhost(startPositionOfGhost) {
@@ -253,6 +258,15 @@ export default class Ghost {
 								}
 								this.experience.isInvincible = true;
 								this.experience.lives -= 1;
+								this.experience.powerupActive = false;
+								this.experience.world.powerUps.speedUpTimeout &&
+									clearTimeout(this.experience.world.powerUps.speedUpTimeout);
+								this.experience.world.powerUps.slowDownTimeout &&
+									clearTimeout(this.experience.world.powerUps.slowDownTimeout);
+								this.experience.world.powerUps.invincibleTimeout &&
+									clearTimeout(
+										this.experience.world.powerUps.invincibleTimeout,
+									);
 								this.experience.hud.updateLives();
 								if (this.experience.lives !== 0) {
 									this.experience.world.player.respawnAnimation();

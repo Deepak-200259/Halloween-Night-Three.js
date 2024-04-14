@@ -9,6 +9,10 @@ export default class PowerUps {
 		this.scene = this.experience.scene;
 		this.resources = this.experience.resources;
 
+		this.spawnPowerUps();
+	}
+
+	spawnPowerUps() {
 		const powerupSpawnInterval = setInterval(() => {
 			if (!this.experience.gameEnded) {
 				const selectedPowerup = this.choosePowerUp();
@@ -17,14 +21,14 @@ export default class PowerUps {
 			} else {
 				clearInterval(powerupSpawnInterval);
 			}
-			const powerUpRemovalInterval = setTimeout(() => {
+			this.powerUpRemovalInterval = setTimeout(() => {
 				if (!this.experience.gameEnded) {
 					this.removeCurrentPowerupAnimation();
 				} else {
-					clearInterval(powerUpRemovalInterval);
+					clearInterval(this.powerUpRemovalInterval);
 				}
-			}, 1500);
-		}, 2500);
+			}, 8000);
+		}, 16000);
 	}
 
 	choosePowerUp() {
@@ -38,8 +42,12 @@ export default class PowerUps {
 		switch (powerup) {
 			case POWERUPS.INVINCIBLE:
 				currentPowerUp = this.resources.items.bluePowerUp.scene.clone();
+				currentPowerUp.userData.powerupType = POWERUPS.INVINCIBLE;
 				currentPowerUp.traverse((child) => {
 					if (child instanceof THREE.Mesh) {
+						this.currentPowerupBoundingBox = new THREE.Box3().setFromObject(
+							child,
+						);
 						child.material = new THREE.MeshPhongMaterial();
 						child.material.transparent = true;
 						child.material.opacity = 0;
@@ -51,8 +59,12 @@ export default class PowerUps {
 				break;
 			case POWERUPS.SLOW_DOWN:
 				currentPowerUp = this.resources.items.greenPowerUp.scene.clone();
+				currentPowerUp.userData.powerupType = POWERUPS.SLOW_DOWN;
 				currentPowerUp.traverse((child) => {
 					if (child instanceof THREE.Mesh) {
+						this.currentPowerupBoundingBox = new THREE.Box3().setFromObject(
+							child,
+						);
 						child.material = new THREE.MeshPhongMaterial();
 						child.material.transparent = true;
 						child.material.opacity = 0;
@@ -64,8 +76,12 @@ export default class PowerUps {
 				break;
 			case POWERUPS.SPEED_UP:
 				currentPowerUp = this.resources.items.yellowPowerUp.scene.clone();
+				currentPowerUp.userData.powerupType = POWERUPS.SPEED_UP;
 				currentPowerUp.traverse((child) => {
 					if (child instanceof THREE.Mesh) {
+						this.currentPowerupBoundingBox = new THREE.Box3().setFromObject(
+							child,
+						);
 						child.material = new THREE.MeshPhongMaterial();
 						child.material.transparent = true;
 						child.material.opacity = 0;
@@ -156,5 +172,71 @@ export default class PowerUps {
 			this.scene.remove(this.currentPowerup);
 			this.currentPowerup = null;
 		}
+	}
+
+	powerupTakenAnimation() {
+		const powerupTakenTimeline = gsap.timeline();
+		powerupTakenTimeline
+			.to(this.currentPowerup.position, {
+				onUpdate: () => {
+					this.currentPowerup.position.copy(
+						this.experience.world.player.player.position,
+					);
+				},
+				duration: 0.1,
+			})
+			.to(this.currentPowerup.children[0].material, {
+				opacity: 0,
+				duration: 0.2,
+			})
+			.then(() => {
+				this.removePowerup(this.currentPowerup);
+			});
+	}
+
+	powerupChoosen() {
+		switch (this.currentPowerup.userData.powerupType) {
+			case POWERUPS.INVINCIBLE:
+				{
+					this.experience.isInvincible = true;
+					this.experience.world.player.playInvinsibleAnimation();
+					this.invincibleTimeout = setTimeout(() => {
+						if (!this.experience.gameEnded) {
+							this.experience.powerupActive = false;
+						} else {
+							clearTimeout(this.invincibleTimeout);
+						}
+					}, 12500);
+				}
+				break;
+			case POWERUPS.SLOW_DOWN:
+				{
+					this.experience.ghostsSpeed = 2;
+					this.slowDownTimeout = setTimeout(() => {
+						if (!this.experience.gameEnded) {
+							this.experience.ghostsSpeed = 1;
+							this.experience.powerupActive = false;
+						} else {
+							clearTimeout(this.slowDownTimeout);
+						}
+					}, 10000);
+				}
+				break;
+			case POWERUPS.SPEED_UP:
+				{
+					this.experience.playerSpeed = 0.5;
+					this.speedUpTimeout = setTimeout(() => {
+						if (!this.experience.gameEnded) {
+							this.experience.playerSpeed = 1;
+							this.experience.powerupActive = false;
+						} else {
+							clearTimeout(this.speedUpTimeout);
+						}
+					}, 10000);
+				}
+				break;
+		}
+		this.powerupTakenAnimation();
+		clearInterval(this.powerUpRemovalInterval);
 	}
 }
