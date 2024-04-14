@@ -15,7 +15,7 @@ export default class Ghost {
 		this.camera = this.experience.camera;
 
 		this.resources = this.experience.resources;
-		this.ghotsCurrentlyInScene = [];
+		this.ghostsCurrentlyInScene = [];
 		this.boundingBoxesOfGhosts = [];
 		this.ghostType = ghostType;
 		this.spawnGhosts();
@@ -83,13 +83,14 @@ export default class Ghost {
 				child.material = new THREE.MeshPhongMaterial();
 				child.material.map = this.experience.resources.items.ghostBaseColor;
 				child.material.map.flipY = false;
+				child.material.transparent = true;
 				child.material.map.colorspace = THREE.SRGBColorSpace;
 				child.castShadow = true;
 			}
 		});
 		gsap.to(ghost.children[0].material, { opacity: 1 });
 		this.scene.add(ghost);
-		this.ghotsCurrentlyInScene.push(ghost);
+		this.ghostsCurrentlyInScene.push(ghost);
 		const movementObj = this.CheckDirectionToMoveGhost(positionOfGhost);
 		ghost.rotation.y = this.chooseRotationAngle(ghost.position, movementObj);
 		this.playWhiteGhostMovementAnimation(ghost, movementObj);
@@ -123,6 +124,11 @@ export default class Ghost {
 						duration: 6 * this.experience.ghostsSpeed,
 						ease: "none",
 						onComplete: () => {
+							gsap.to(ghost.rotation, {
+								y: ghost.rotation.y + Math.PI,
+								duration: 0.1 * this.experience.ghostsSpeed,
+								ease: "none",
+							});
 							// When this animation completes, decrement the totalAnimations count
 							totalAnimations--;
 
@@ -137,11 +143,6 @@ export default class Ghost {
 
 				const reverseAllAnimations = () => {
 					ghostAnimations.forEach((animation) => animation.reverse());
-					gsap.to(ghost.rotation, {
-						y: ghost.rotation.y + Math.PI,
-						duration: 0.1 * this.experience.ghostsSpeed,
-						ease: "none",
-					});
 				};
 			});
 	}
@@ -182,6 +183,23 @@ export default class Ghost {
 		else if (z === 6) return { x: x, directionArray: negativeZArray };
 	}
 
+	playGhostRemoveAnimation() {
+		const removeGhostTimeline = gsap.timeline();
+		removeGhostTimeline.to(this.ghostsCurrentlyInScene[0].position, {
+			y: 3,
+			duration: 0.25,
+		});
+		gsap
+			.to(this.ghostsCurrentlyInScene[0].children[0].material, {
+				opacity: 0,
+				duration: 0.25,
+			})
+			.then(() => {
+				const ghostToBeRemoved = this.ghostsCurrentlyInScene.shift();
+				this.removeGhostFromScene(ghostToBeRemoved);
+			});
+	}
+
 	removeGhostFromScene(ghost) {
 		if (ghost.parent) {
 			this.disposeObject(ghost);
@@ -211,10 +229,10 @@ export default class Ghost {
 			}
 			obj.removeFromParent();
 			if (
-				this.ghotsCurrentlyInScene[0] !== null ||
-				this.ghotsCurrentlyInScene[0] !== undefined
+				this.ghostsCurrentlyInScene[0] !== null ||
+				this.ghostsCurrentlyInScene[0] !== undefined
 			) {
-				this.ghotsCurrentlyInScene.shift();
+				this.ghostsCurrentlyInScene.shift();
 			}
 		}
 	}
@@ -242,10 +260,10 @@ export default class Ghost {
 						this.experience.world.player.playerBoundingBox,
 						"player",
 					);
-					for (let i = 0; i < this.ghotsCurrentlyInScene.length; i++) {
-						if (this.ghotsCurrentlyInScene[i]) {
+					for (let i = 0; i < this.ghostsCurrentlyInScene.length; i++) {
+						if (this.ghostsCurrentlyInScene[i]) {
 							const ghostBox = this.updateBoundingBox(
-								this.ghotsCurrentlyInScene[i].children[0],
+								this.ghostsCurrentlyInScene[i].children[0],
 								this.boundingBoxesOfGhosts[i],
 								"ghost",
 							);
