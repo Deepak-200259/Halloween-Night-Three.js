@@ -2,6 +2,7 @@ import * as THREE from "three";
 import gsap from "gsap";
 import Experience from "../Experience";
 import { POSITIVE_X_ARRAY, POSITIVE_Z_ARRAY, POWERUPS } from "./Constants";
+import { getRandomPosition } from "../Utils/getRandomPosition";
 
 export default class PowerUps {
 	constructor() {
@@ -94,27 +95,9 @@ export default class PowerUps {
 		}
 		currentPowerUp.rotation.z = (Math.PI / 180) * 35;
 		const positions = this.experience.world.graves.gravesCoordinates;
-		const { x, z } = this.getRandomPosition(positions);
+		const { x, z } = getRandomPosition(positions);
 		currentPowerUp.position.set(x, 2, z);
 		return currentPowerUp;
-	}
-
-	getRandomPosition(positions) {
-		const positionXArray = POSITIVE_X_ARRAY;
-		const positionZArray = POSITIVE_Z_ARRAY;
-		let randomXValue, randomZValue;
-		do {
-			randomXValue = Math.floor(Math.random() * positionXArray.length);
-			randomZValue = Math.floor(Math.random() * positionZArray.length);
-		} while (
-			positions.some(
-				(coord) =>
-					coord.x === positionXArray[randomXValue] &&
-					coord.z === positionZArray[randomZValue],
-			) ||
-			(randomXValue === 0 && randomZValue === 0)
-		);
-		return { x: positionXArray[randomXValue], z: positionZArray[randomZValue] };
 	}
 
 	startPowerupAnimation() {

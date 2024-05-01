@@ -3,6 +3,7 @@ import Experience from "../Experience";
 import { graves } from "../sources";
 import gsap from "gsap";
 import { POSITIVE_X_ARRAY, POSITIVE_Z_ARRAY } from "./Constants";
+import { getRandomPosition } from "../Utils/getRandomPosition";
 
 export default class Grave {
 	constructor() {
@@ -15,26 +16,6 @@ export default class Grave {
 	getRandomGraveNumber(gravesArray) {
 		const randomIndex = Math.floor(Math.random() * gravesArray.length);
 		return randomIndex;
-	}
-
-	getRandomPosition(positions) {
-		const positionXArray = POSITIVE_X_ARRAY;
-		const positionZArray = POSITIVE_Z_ARRAY;
-
-		let randomXValue, randomZValue;
-		do {
-			randomXValue = Math.floor(Math.random() * positionXArray.length);
-			randomZValue = Math.floor(Math.random() * positionZArray.length);
-		} while (
-			positions.some(
-				(coord) =>
-					coord.x === positionXArray[randomXValue] &&
-					coord.z === positionZArray[randomZValue],
-			) ||
-			(randomXValue === 0 && randomZValue === 0)
-		);
-
-		return { x: positionXArray[randomXValue], z: positionZArray[randomZValue] };
 	}
 
 	addGraves() {
@@ -52,7 +33,7 @@ export default class Grave {
 					child.material.roughness = 0.8;
 				}
 			});
-			const randomPosition = this.getRandomPosition(coordinates);
+			const randomPosition = getRandomPosition(coordinates);
 			coordinates.push(randomPosition); // Mark the position as occupied
 			grave.position.x = randomPosition.x;
 			grave.position.y = 7;

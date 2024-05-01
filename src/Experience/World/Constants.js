@@ -1,3 +1,9 @@
+export const DEVICES = {
+	Web: "Web",
+	Android: "Android",
+	IOS: "IOS",
+};
+
 export const GHOST_TYPE = {
 	WHITE_GHOST: "WHITE_GHOST",
 	FAT_PUMPKIN_GHOST: "FAT_PUMPKIN_GHOST",

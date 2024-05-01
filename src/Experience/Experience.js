@@ -11,6 +11,8 @@ import Resources from "./Utils/Resources.js";
 import sources from "./sources.js";
 import HUD from "./Hud.js";
 import AudioManager from "./Managers/AudioManager.js";
+import { detectDevice } from "./Utils/detectDevice.js";
+import { DEVICES } from "./World/Constants.js";
 
 let instance = null;
 
@@ -35,9 +37,11 @@ export default class Experience {
 
 		// Global access
 		window.experience = this;
-
+		console.log(navigator.userAgent);
 		// Options
 		this.canvas = _canvas;
+
+		this.setupGameController(detectDevice());
 
 		// Setup
 		this.debug = new Debug();
@@ -60,6 +64,17 @@ export default class Experience {
 		this.time.on("tick", () => {
 			this.update();
 		});
+	}
+
+	setupGameController(currentDevice) {
+		if (currentDevice === DEVICES.Web) {
+			document.getElementById("game-controller").style.display = "none";
+		} else if (
+			currentDevice === DEVICES.Android ||
+			currentDevice === DEVICES.IOS
+		) {
+			document.getElementById("game-controller").style.display = "block";
+		}
 	}
 
 	resize() {

@@ -1,5 +1,6 @@
 import Experience from "../Experience.js";
 import HUD from "../Hud.js";
+import Candies from "./Candies.js";
 import { GHOST_TYPE } from "./Constants.js";
 import Environment from "./Environment.js";
 import GateArch from "./GateArch.js";
@@ -34,6 +35,7 @@ export default class World {
 		this.player = new Player();
 		this.ghost = new Ghost(GHOST_TYPE.WHITE_GHOST);
 		this.scarecrow = new ScareCrow();
+		this.candies = new Candies();
 	}
 
 	update() {

@@ -268,9 +268,9 @@ export default class Player {
 				y: 0.6,
 				duration: 0.15 * this.experience.playerSpeed,
 				ease: "power2.in",
-				onComplete: () => {
-					this.isAnimationPlaying = false;
-				},
+			})
+			.then(() => {
+				this.isAnimationPlaying = false;
 			});
 	}
 
