@@ -131,7 +131,7 @@ export default class Ghost {
 								: movementObj.directionArray[
 										movementObj.directionArray.length - 1
 								  ],
-						duration: 1 * this.experience.ghostsSpeed,
+						duration: 6 * this.experience.ghostsSpeed,
 						ease: "none",
 					})
 					.to(ghost.rotation, {
@@ -148,7 +148,7 @@ export default class Ghost {
 							movementObj.z !== undefined
 								? ghost.position.z
 								: movementObj.directionArray[0],
-						duration: 1 * this.experience.ghostsSpeed,
+						duration: 6 * this.experience.ghostsSpeed,
 						ease: "none",
 					})
 					.to(ghost.rotation, {
@@ -209,7 +209,6 @@ export default class Ghost {
 	removeGhostFromScene(ghost) {
 		if (ghost.parent) {
 			this.disposeObject(ghost);
-			ghost.removeFromParent();
 		}
 	}
 

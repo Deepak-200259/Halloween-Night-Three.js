@@ -38,7 +38,7 @@ export default class Grave {
 	}
 
 	addGraves() {
-		const gravesCount = 10;
+		const gravesCount = 8;
 		const coordinates = [{ x: 0, z: 0 }];
 		for (let i = 0; i < gravesCount; i++) {
 			const graveName = graves[this.getRandomGraveNumber(graves)].name;

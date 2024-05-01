@@ -8,6 +8,7 @@ import Grave from "./Graves.js";
 import Ground from "./Ground.js";
 import Player from "./Player.js";
 import PowerUps from "./Powerups.js";
+import ScareCrow from "./Scarecrow.js";
 
 export default class World {
 	constructor() {
@@ -32,6 +33,7 @@ export default class World {
 		this.graves = new Grave();
 		this.player = new Player();
 		this.ghost = new Ghost(GHOST_TYPE.WHITE_GHOST);
+		this.scarecrow = new ScareCrow();
 	}
 
 	update() {

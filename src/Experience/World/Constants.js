@@ -29,3 +29,18 @@ export const POWERUPS = {
 	SLOW_DOWN: "SLOW_DOWN",
 	INVINCIBLE: "INVINCIBLE",
 };
+
+export const SCARE_CROW_INFO = [
+	{
+		position: { x: 8.5, y: -0.2, z: -10 },
+		angle: -(Math.PI / 180) * 45,
+	},
+	{
+		position: { x: -7.5, y: -0.2, z: -8 },
+		angle: (Math.PI / 180) * 45,
+	},
+	{
+		position: { x: 11.5, y: -0.2, z: 7.5 },
+		angle: 0,
+	},
+];

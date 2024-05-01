@@ -31,9 +31,16 @@ export default class Player {
 	playPlayerBreatheAnimation() {
 		gsap
 			.timeline()
-			.to(this.player.scale, { duration: 0.5, y: 0.75, x: 1.15, z: 1.15 })
-			.to(this.player.scale, { duration: 0.5, y: 1, x: 1, z: 1 })
-			.delay(1)
+			.fromTo(
+				this.player.scale,
+				{ y: 1, x: 1, z: 1 },
+				{ duration: 0.5, y: 0.75, x: 1.15, z: 1.15 },
+			)
+			.fromTo(
+				this.player.scale,
+				{ y: 0.75, x: 1.15, z: 1.15 },
+				{ duration: 0.5, y: 1, x: 1, z: 1 },
+			)
 			.repeat(Infinity);
 	}
 
@@ -290,11 +297,11 @@ export default class Player {
 			.fromTo(
 				this.player.children[0].material,
 				{ opacity: 1 },
-				{ opacity: 0.25, duration: 0.25 },
+				{ opacity: 0.2, duration: 0.75 },
 			)
 			.fromTo(
 				this.player.children[0].material,
-				{ opacity: 0.25 },
+				{ opacity: 0.2 },
 				{ opacity: 1, duration: 0.25 },
 			)
 			.repeat(10)
@@ -338,6 +345,9 @@ export default class Player {
 		const grave = this.resources.items.playerGrave.scene.clone();
 		grave.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
+				child.material = new THREE.MeshPhongMaterial();
+				child.material.map = this.resources.items.graveBaseColor;
+				child.material.map.flipY = false;
 				child.castShadow = true;
 				child.material.metalness = 1;
 				child.material.roughness = 1;
