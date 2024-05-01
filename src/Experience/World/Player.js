@@ -39,6 +39,9 @@ export default class Player {
 
 	checkIfPositionIsAvailable(playerNextPosition) {
 		for (let i = 0; i < this.occupiedPositions.length; i++) {
+			if (playerNextPosition.x === 0 && playerNextPosition.z === 0) {
+				return false;
+			}
 			if (
 				playerNextPosition.x === this.occupiedPositions[i].x &&
 				playerNextPosition.z === this.occupiedPositions[i].z
@@ -337,7 +340,7 @@ export default class Player {
 			if (child instanceof THREE.Mesh) {
 				child.castShadow = true;
 				child.material.metalness = 1;
-				child.material.roughness = 0.8;
+				child.material.roughness = 1;
 			}
 		});
 		grave.position.copy(this.player.position);

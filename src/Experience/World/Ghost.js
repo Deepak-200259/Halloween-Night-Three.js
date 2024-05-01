@@ -76,6 +76,7 @@ export default class Ghost {
 	setupGhost(ghost, positionOfGhost, directionToMoveArray) {
 		ghost.children[0].material.opacity = 0;
 		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
+		console.log(ghost.position);
 		ghost.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
 				const ghostBoundingBox = new THREE.Box3().setFromObject(child, true);
@@ -93,7 +94,7 @@ export default class Ghost {
 		this.ghostsCurrentlyInScene.push(ghost);
 		const movementObj = this.CheckDirectionToMoveGhost(positionOfGhost);
 		ghost.rotation.y = this.chooseRotationAngle(ghost.position, movementObj);
-		this.playWhiteGhostMovementAnimation(ghost, movementObj);
+		this.playGhostAnim(ghost, movementObj);
 	}
 
 	chooseRotationAngle(ghostPosition, movementObj) {
@@ -107,7 +108,8 @@ export default class Ghost {
 		else if (ghostPosition.z === 6) return Math.PI;
 	}
 
-	playWhiteGhostMovementAnimation(ghost, movementObj) {
+	playGhostAnim(ghost, movementObj) {
+		const ghostAnimTimeline = gsap.timeline();
 		gsap
 			.fromTo(
 				ghost.position,
@@ -115,35 +117,56 @@ export default class Ghost {
 				{ y: 0.6, duration: 1 * this.experience.ghostsSpeed },
 			)
 			.then(() => {
-				let ghostAnimations = [];
-				let totalAnimations = movementObj.directionArray.length; // To keep track of total animations completed
-				movementObj.directionArray.forEach((direction, index) => {
-					let animation = gsap.to(ghost.position, {
-						x: movementObj.x !== undefined ? ghost.position.x : direction,
-						z: movementObj.z !== undefined ? ghost.position.z : direction,
-						duration: 6 * this.experience.ghostsSpeed,
+				ghostAnimTimeline
+					.to(ghost.position, {
+						x:
+							movementObj.x !== undefined
+								? ghost.position.x
+								: movementObj.directionArray[
+										movementObj.directionArray.length - 1
+								  ],
+						z:
+							movementObj.z !== undefined
+								? ghost.position.z
+								: movementObj.directionArray[
+										movementObj.directionArray.length - 1
+								  ],
+						duration: 1 * this.experience.ghostsSpeed,
 						ease: "none",
-						onComplete: () => {
-							gsap.to(ghost.rotation, {
-								y: ghost.rotation.y + Math.PI,
-								duration: 0.1 * this.experience.ghostsSpeed,
-								ease: "none",
-							});
-							// When this animation completes, decrement the totalAnimations count
-							totalAnimations--;
-
-							// If all animations are completed, play the reverse animations
-							if (totalAnimations === 0) {
-								reverseAllAnimations();
-							}
-						},
+					})
+					.to(ghost.rotation, {
+						y: ghost.rotation.y + Math.PI,
+						duration: 0.1 * this.experience.ghostsSpeed,
+						ease: "none",
+					})
+					.to(ghost.position, {
+						x:
+							movementObj.x !== undefined
+								? ghost.position.x
+								: movementObj.directionArray[0],
+						z:
+							movementObj.z !== undefined
+								? ghost.position.z
+								: movementObj.directionArray[0],
+						duration: 1 * this.experience.ghostsSpeed,
+						ease: "none",
+					})
+					.to(ghost.rotation, {
+						y: ghost.rotation.y + Math.PI,
+						duration: 0.1 * this.experience.ghostsSpeed,
+						ease: "none",
+					})
+					.repeat(1)
+					.then(() => {
+						gsap.fromTo(
+							ghost.position,
+							{ y: 0.6 },
+							{ y: 3, duration: 1 * this.experience.ghostsSpeed },
+						);
+						gsap
+							.to(ghost.children[0].material, { opacity: 0, duration: 0.5 })
+							.then(() => this.removeGhostFromScene(ghost));
 					});
-					ghostAnimations.push(animation);
-				});
-
-				const reverseAllAnimations = () => {
-					ghostAnimations.forEach((animation) => animation.reverse());
-				};
 			});
 	}
 
@@ -183,23 +206,6 @@ export default class Ghost {
 		else if (z === 6) return { x: x, directionArray: negativeZArray };
 	}
 
-	playGhostRemoveAnimation() {
-		const removeGhostTimeline = gsap.timeline();
-		removeGhostTimeline.to(this.ghostsCurrentlyInScene[0].position, {
-			y: 3,
-			duration: 0.25,
-		});
-		gsap
-			.to(this.ghostsCurrentlyInScene[0].children[0].material, {
-				opacity: 0,
-				duration: 0.25,
-			})
-			.then(() => {
-				const ghostToBeRemoved = this.ghostsCurrentlyInScene.shift();
-				this.removeGhostFromScene(ghostToBeRemoved);
-			});
-	}
-
 	removeGhostFromScene(ghost) {
 		if (ghost.parent) {
 			this.disposeObject(ghost);
@@ -209,7 +215,6 @@ export default class Ghost {
 
 	disposeObject(obj) {
 		if (obj !== null) {
-			console.log("working");
 			for (let i = 0; i < obj.children.length; i++) {
 				this.disposeObject(obj.children[i]);
 			}
