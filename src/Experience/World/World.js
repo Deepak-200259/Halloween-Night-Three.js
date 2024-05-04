@@ -41,5 +41,6 @@ export default class World {
 	update() {
 		this.ghost && this.ghost.update();
 		this.player && this.player.update();
+		this.candies && this.candies.update();
 	}
 }

@@ -10,8 +10,6 @@ export default class AudioManager {
 	}
 
 	addAudioListener() {
-		// instantiate a listener
-		console.log("THIS IS AUDIO MANAGER");
 		this.audioListener = new THREE.AudioListener();
 		this.camera.add(this.audioListener);
 	}

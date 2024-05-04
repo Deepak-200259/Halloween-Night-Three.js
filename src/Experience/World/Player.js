@@ -249,7 +249,6 @@ export default class Player {
 	}
 
 	rotationAnimation(rotation) {
-		console.log("ROTATION DURATION", 0.25 * this.experience.playerSpeed);
 		gsap.to(this.player.rotation, {
 			y: rotation,
 			duration: 0.25 * this.experience.playerSpeed,
@@ -384,7 +383,6 @@ export default class Player {
 						!this.experience.powerupActive &&
 						powerupBox?.intersectsBox(PlayerBox)
 					) {
-						console.log("POWERUP SELECTED");
 						this.experience.powerupActive = true;
 						this.experience.world.powerUps.powerupChoosen();
 					}

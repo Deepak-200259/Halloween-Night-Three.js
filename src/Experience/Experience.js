@@ -37,7 +37,6 @@ export default class Experience {
 
 		// Global access
 		window.experience = this;
-		console.log(navigator.userAgent);
 		// Options
 		this.canvas = _canvas;
 

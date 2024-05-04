@@ -51,9 +51,9 @@ export default class Resources extends EventEmitter {
 		this.items[source.name] = file;
 
 		this.loaded++;
-		console.log(this.items);
+		
 		const percentLoaded = (this.loaded / this.sources.length) * 100;
-		console.log(percentLoaded);
+		
 
 		if (this.loaded === this.toLoad) {
 			this.trigger("ready");

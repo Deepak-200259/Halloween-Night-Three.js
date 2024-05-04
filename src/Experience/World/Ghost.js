@@ -76,7 +76,6 @@ export default class Ghost {
 	setupGhost(ghost, positionOfGhost, directionToMoveArray) {
 		ghost.children[0].material.opacity = 0;
 		ghost.position.set(positionOfGhost.x, 0.6, positionOfGhost.z);
-		console.log(ghost.position);
 		ghost.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
 				const ghostBoundingBox = new THREE.Box3().setFromObject(child, true);
@@ -232,18 +231,13 @@ export default class Ghost {
 				obj.texture.dispose();
 			}
 			obj.removeFromParent();
-			if (
-				this.ghostsCurrentlyInScene[0] !== null ||
-				this.ghostsCurrentlyInScene[0] !== undefined
-			) {
-				this.ghostsCurrentlyInScene.shift();
-			}
+			this.ghostsCurrentlyInScene.shift();
+			this.boundingBoxesOfGhosts.shift();
 		}
 	}
 
 	updateBoundingBox(object, box, type) {
 		box.setFromObject(object);
-		// console.log(type, box);
 		return box;
 	}
 
