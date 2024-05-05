@@ -1,5 +1,6 @@
 import Experience from "../Experience.js";
 import HUD from "../Hud.js";
+import TextManager from "../Managers/TextManager.js";
 import Candies from "./Candies.js";
 import { GHOST_TYPE } from "./Constants.js";
 import Environment from "./Environment.js";
@@ -30,6 +31,10 @@ export default class World {
 	}
 
 	startGame() {
+		this.experience.audioManager.playAudio(
+			this.experience.resources.items.musicSound,
+		);
+		this.experience.textManager = new TextManager();
 		this.powerUps = new PowerUps();
 		this.graves = new Grave();
 		this.player = new Player();

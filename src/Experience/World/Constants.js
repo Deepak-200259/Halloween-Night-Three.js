@@ -4,6 +4,11 @@ export const DEVICES = {
 	IOS: "IOS",
 };
 
+export const CANDY_TYPE = {
+	CANDY_BOX: "CANDY_BOX",
+	SMALL_CANDY: "SMALL_CANDY",
+};
+
 export const GHOST_TYPE = {
 	WHITE_GHOST: "WHITE_GHOST",
 	FAT_PUMPKIN_GHOST: "FAT_PUMPKIN_GHOST",

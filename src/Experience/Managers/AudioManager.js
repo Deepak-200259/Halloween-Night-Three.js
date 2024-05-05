@@ -14,9 +14,8 @@ export default class AudioManager {
 		this.camera.add(this.audioListener);
 	}
 
-	playAudio(sound) {
+	playAudio(sound, repeat) {
 		const audio = new THREE.Audio(this.audioListener);
-		this.scene.add(audio);
 		audio.setVolume(0.5);
 		audio.setBuffer(sound);
 		audio.play();

@@ -13,6 +13,7 @@ import HUD from "./Hud.js";
 import AudioManager from "./Managers/AudioManager.js";
 import { detectDevice } from "./Utils/detectDevice.js";
 import { DEVICES } from "./World/Constants.js";
+import TextManager from "./Managers/TextManager.js";
 
 let instance = null;
 

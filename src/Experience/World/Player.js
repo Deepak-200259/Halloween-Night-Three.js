@@ -340,6 +340,7 @@ export default class Player {
 	}
 
 	dieAnimation() {
+		this.experience.audioManager.playAudio(this.resources.items.gameOverSound);
 		gsap.killTweensOf(this.player.scale);
 		const grave = this.resources.items.playerGrave.scene.clone();
 		grave.traverse((child) => {

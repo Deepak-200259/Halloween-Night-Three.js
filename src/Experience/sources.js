@@ -191,6 +191,11 @@ export default [
 		type: "audio",
 		path: "audio/smash.mp3",
 	},
+	{
+		name: "halloween_Spooky_Font",
+		type: "font",
+		path: "fonts/Halloween Spooky_Regular.json",
+	},
 ];
 
 export const graves = [

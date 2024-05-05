@@ -1,6 +1,6 @@
 import Experience from "../Experience";
 import * as THREE from "three";
-import { POSITIVE_X_ARRAY, POSITIVE_Z_ARRAY } from "./Constants";
+import { CANDY_TYPE, POSITIVE_X_ARRAY, POSITIVE_Z_ARRAY } from "./Constants";
 import { getRandomPosition } from "../Utils/getRandomPosition";
 import gsap from "gsap";
 export default class Candies {
@@ -16,12 +16,18 @@ export default class Candies {
 
 	getCandy() {
 		const candy = this.resources.items.smallCandy.scene.clone().children[0];
+		const candyBox = this.resources.items.candyBox.scene.clone().children[0];
 		const addCandyInterval = setInterval(() => {
 			if (!this.experience.gameEnded) {
-				this.addCandy(candy.clone());
+				this.addCandy(candy.clone(), CANDY_TYPE.SMALL_CANDY);
 			} else {
 				clearInterval(addCandyInterval);
 			}
+			setTimeout(() => {
+				if (!this.experience.gameEnded) {
+					this.addCandy(candyBox.clone(), CANDY_TYPE.CANDY_BOX);
+				}
+			}, 10000);
 		}, 5000);
 		setTimeout(() => {
 			const removecandyInterval = setInterval(() => {
@@ -59,11 +65,11 @@ export default class Candies {
 				obj.texture.dispose();
 			}
 			obj.removeFromParent();
-			
 		}
 	}
 
-	addCandy(candy) {
+	addCandy(candy, name) {
+		candy.name = name;
 		candy.traverse((child) => {
 			if (child instanceof THREE.Mesh) {
 				const candiesBoundingBox = new THREE.Box3().setFromObject(child, true);
@@ -109,7 +115,16 @@ export default class Candies {
 						this.boundingBoxesOfCandies[i],
 					);
 					if (candyBoundingBox.intersectsBox(playerBoundingBox)) {
-						this.experience.score += 50;
+						if (candy.name === CANDY_TYPE.SMALL_CANDY) {
+							this.experience.score += 50;
+							this.experience.textManager.createText("+50", candy.position);
+						} else if (candy.name === CANDY_TYPE.CANDY_BOX) {
+							this.experience.textManager.createText("+200", candy.position);
+							this.experience.score += 200;
+						}
+						this.experience.audioManager.playAudio(
+							this.resources.items.collectSound,
+						);
 						this.candiesCurrentlyInScene[i] = null;
 						this.boundingBoxesOfCandies[i] = null;
 						this.disposeObject(candy);
