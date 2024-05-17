@@ -25,7 +25,7 @@ export default class World {
 			this.gateArch = new GateArch();
 			this.ground = new Ground();
 			setTimeout(() => {
-				document.getElementById("loader").style.display = "none";
+				document.getElementById("pumpkinloader").style.display = "none";
 			}, 1000);
 		});
 	}
